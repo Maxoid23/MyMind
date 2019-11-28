@@ -1,0 +1,26 @@
+#Компоненты для docker-registry в локальной сети на Debian10
+apache2-utils
+docker-ce
+docker-py
+ca-certificates
+openssl
+#Эта строка важна для создания сертификата, вообще тут кроется боль сертификата
+sudo vi /etc/ssl/openssl.cnf
+#subjectAltName=IP:172.16.253.54
+# Делаем себе самоподписанный сертификат
+mkdir -p /certs
+cd /
+openssl req \
+  -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
+  -x509 -days 365 -out certs/domain.crt
+#Тоже важно, наверно= )
+#При протыкивании энтера Common Name (e.g. server FQDN or YOUR name) []:172.16.253.54 !!! ВАЖНО
+# Как стартануть докер регистри и не обосраться
+sudo docker run -d -p 5000:5000 --restart=always --name registry \
+  -v /certs:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  registry:2
+#Сертификат копируем на КЛИЕНТА в /etc/docker/certs.d/<имя сервера с регистри>: <порт сервера>/ca.crt
+  ca.crt должен быть на клиенте в хосте:5000
+  /etc/docker/certs.d/172.16.253.54:5000/ca.crt
