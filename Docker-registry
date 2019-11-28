@@ -1,3 +1,4 @@
+Полезная ссыка https://medium.com/faun/create-a-private-local-docker-registry-5c79ce912620
 #Компоненты для docker-registry в локальной сети на Debian10
 apache2-utils
 docker-ce
